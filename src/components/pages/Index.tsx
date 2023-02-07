@@ -14,12 +14,12 @@ function Index() {
    * render cond ?
    */
 
-  const [user, setUser] = useState<Player | null | Boolean>(true);
+  const [player, setPlayer] = useState<Player | null | boolean>(true);
   //todo: change value to null
   const [showGame, setShowGame] = useState(false);
   useEffect(() => {
     const timeoutSec = Math.ceil(Math.random() * 5);
-    if (user) {
+    if (player) {
       setTimeout(() => {
         setShowGame(true)
       }, timeoutSec);
@@ -31,10 +31,10 @@ function Index() {
     return () => {
       setShowGame(false);
     }
-  }, [user]);
+  }, [player]);
   return (
     <div className="">
-      {user ? <Game {...{ status: showGame, player: user }} /> : <EmailForm />}
+      {player ? <Game {...{ gameStatus: showGame, player: player as Player }} /> : <EmailForm />}
     </div>
   );
 }

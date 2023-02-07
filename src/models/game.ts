@@ -9,3 +9,7 @@ export interface Player {
     highestScore: number;
     name?: string;
 }
+export interface Status {
+    stateType: string;
+    message: string;
+}
