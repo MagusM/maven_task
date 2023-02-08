@@ -16,7 +16,8 @@ const statusObjectInitial: StatusI = {
 const useGame = () => {
     const [gameObj, setGameObj] = useState<GameI>(gameObjectInitial);
     const [status, setStatus] = useState<StatusI>(statusObjectInitial);
-    const { side, show, resetTime, startBlink, stopBlink } = useBlink(BLINK_DELAY, BLINK_DURATION);
+    const [startGame, setStartGame] = useState<boolean>(false);
+    const { side, show, showIntervalTS,startBlink, stopBlink, resetBlink } = useBlink(BLINK_DELAY, BLINK_DURATION, startGame);
 
     function setScore(score: number) {
         setGameObj((prev: GameI) => ({
@@ -57,17 +58,17 @@ const useGame = () => {
         }
     }
     function start() {
-        startBlink();
+        setStartGame(true);
     }
     function stop() {
-        /**
-         * reset status
-         * reset game obj
-         * reset useBlink
-         */
-        setStatus(statusObjectInitial);
+        setStartGame(false);
+    }
+    function reset() {
         setGameObj(gameObjectInitial);
-        stopBlink();
+        resetBlink();
+    }
+    function resetStatus() {
+        setStatus(statusObjectInitial);
     }
 
     return {
@@ -75,6 +76,8 @@ const useGame = () => {
         handleKeyPressed,
         start,
         stop,
+        reset,
+        resetStatus,
         show: show,
         side: side,
         status: status,

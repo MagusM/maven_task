@@ -1,51 +1,66 @@
 import { useEffect, useState } from "react";
-import { randomBetweenZeroAnd } from "~/components/utils";
+import { BLINK_DELAY, BLINK_DURATION, randomBetweenZeroAnd } from "~/components/utils";
 
-type BlinkProps= {
+type BlinkProps = {
     delay: number;
     duration: number;
+    gameStarted?: boolean;
+};
+
+type ShowIntervalTS = {
+    startTime: number,
+    endTime: number
 };
 
 //todo: change to use Map
-const map = {
+const sideMap = {
     0: 'left',
     1: 'right'
 };
 
-const useBlink = (delay: number, duration: number): BlinkProps => {
-    const [show, setShow] = useState(false);
-    const [pos, setPos] = useState<keyof typeof map | null>(null);
+const initialShowIntervalTSObject: ShowIntervalTS = {
+    startTime: 0,
+    endTime: 0
+}
 
-    let tsStart = null;
-    let tsEnd = null;
+const useBlink = (delay: number = BLINK_DELAY, duration: number = BLINK_DURATION, gameStarted: boolean = false) => {
+    const [show, setShow] = useState(false);
+    const [pos, setPos] = useState<keyof typeof sideMap | null>(null);
+    const [showIntervalTS, setShowIntervalTS] = useState<ShowIntervalTS>(initialShowIntervalTSObject);
 
     useEffect(() => {
-        if (!(delay && duration)) {
+        if (!gameStarted) {
             return;
         }
 
         const intervalID = setInterval(() => {
-            setShow(true);
-            setPos(map[randomBetweenZeroAnd(1)]);
-            tsStart = Date.now();
+            setPos(sideMap[randomBetweenZeroAnd(1)]);
+            startBlink();
+            setShowIntervalTimeStart(Date.now());
 
             setTimeout(() => {
-                setShow(false);
-                tsEnd = Date.now();
+                stopBlink();
+                setShowIntervalTimeEnd(Date.now());
             }, duration);
         }, delay);
 
         return () => {
             clearInterval(intervalID);
-            tsStart = null;
-            tsEnd = null;
+            resetIntervalTSObject();
         };
 
-    }, [delay, duration]);
+    }, [gameStarted]);
 
-    function resetTime() {
-        tsStart = null;
-        tsEnd = null;
+    function setShowIntervalTimeStart(startTime: number) {
+        setShowIntervalTS((prev: ShowIntervalTS) => ({...prev, startTime}) )
+    }
+
+    function setShowIntervalTimeEnd(endTime: number) {
+        setShowIntervalTS((prev: ShowIntervalTS) => ({ ...prev, endTime }))
+    }
+
+    function resetIntervalTSObject() {
+        setShowIntervalTS(initialShowIntervalTSObject);
     }
 
     function startBlink() {
@@ -53,16 +68,21 @@ const useBlink = (delay: number, duration: number): BlinkProps => {
     }
 
     function stopBlink() {
-        resetTime();
         setShow(false);
+    }
+
+    function resetBlink() {
+        resetIntervalTSObject();
+        stopBlink();
     }
 
     return {
         side: pos,
         show: show,
-        resetTime,
+        showIntervalTS,
         startBlink,
-        stopBlink
+        stopBlink,
+        resetBlink
     }
 
 }
