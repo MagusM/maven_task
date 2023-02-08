@@ -28,17 +28,23 @@ const Game = ({ gameStatus, player}: GameProps) => {
     } = useGame();
 
     useEffect(() => {
-        document.addEventListener('keydown', handleKeyPressed);
+        if (gameStatus) {
+            document.addEventListener('keydown', handleKeyPressed);
+        }
+        
         return () => {
             document.removeEventListener('keydown', handleKeyPressed);
         };
-    }, [handleKeyPressed])
+    }, [handleKeyPressed, gameStatus])
 
     useEffect(() => {
-        //todo: start game
-        //trigger userBlink -> start, stop, side
+        if (gameStatus) {
+            start();
+        } else {
+            stop();
+        }
 
-    }, [status]);
+    }, [gameStatus]);
 
     return (
         <div className="flex flex-col w-[99vh] h-[99vh] justify-center">

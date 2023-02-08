@@ -4,21 +4,14 @@ import { Player } from '~/models/game';
 import EmailForm from '../EmailForm';
 import Game from '../game/Game';
 import Loading from '../shared/Loading';
+import { randomBetweenZeroAnd } from '../utils';
 
 function Index() {
-
-  /**
-   * I need to check if user entered valid email/signedin
-   * if not - enter email first
-   * if email is entered - load the game
-   * render cond ?
-   */
-
-  const [player, setPlayer] = useState<Player | null | boolean>(true);
   //todo: change value to null
-  const [showGame, setShowGame] = useState(false);
+  const [player, setPlayer] = useState<Player | null | boolean>(true);
+  const [showGame, setShowGame] = useState(true);
   useEffect(() => {
-    const timeoutSec = Math.ceil(Math.random() * 5);
+    const timeoutSec = randomBetweenZeroAnd(4) + 1;
     if (player) {
       setTimeout(() => {
         setShowGame(true)
