@@ -6,18 +6,13 @@ type BlinkProps= {
     duration: number;
 };
 
-/**
- * need to retun indicator side
- * need to return start 
- * need to return stop 
- */
-
+//todo: change to use Map
 const map = {
     0: 'left',
     1: 'right'
 };
 
-const useBlink = (delay: number, duration: number) => {
+const useBlink = (delay: number, duration: number): BlinkProps => {
     const [show, setShow] = useState(false);
     const [pos, setPos] = useState<keyof typeof map | null>(null);
 
@@ -48,9 +43,26 @@ const useBlink = (delay: number, duration: number) => {
 
     }, [delay, duration]);
 
+    function resetTime() {
+        tsStart = null;
+        tsEnd = null;
+    }
+
+    function startBlink() {
+        setShow(true);
+    }
+
+    function stopBlink() {
+        resetTime();
+        setShow(false);
+    }
+
     return {
         side: pos,
-        show: show
+        show: show,
+        resetTime,
+        startBlink,
+        stopBlink
     }
 
 }

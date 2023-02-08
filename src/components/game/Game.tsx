@@ -4,6 +4,7 @@ import { useGame } from "~/hooks/useGame";
 import { Game as GameI, Player } from '~/models/game';
 import { BLINK_DELAY, BLINK_DURATION } from "../utils";
 import Indicator from "./Indicator";
+import Status from "./Status";
 
 type GameProps = {
     gameStatus: boolean
@@ -54,8 +55,13 @@ const Game = ({ gameStatus, player}: GameProps) => {
 
             </div>
             <div className="divider"></div>
-            <div id="lowerContainer" className="text-black h-1/3 flex justify-center items-center">
-                {status?.message} | score: {score}
+            <div id="lowerContainer" className="text-black h-1/3 flex flex-col justify-center items-center">
+                <div className="w-80">
+                    {status.message === '' ? null : <Status status={status} />}    
+                </div>
+                <div>
+                    score: {score}
+                </div>
             </div>
         </div>
     );

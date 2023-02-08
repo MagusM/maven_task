@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 import { BLINK_DELAY, BLINK_DURATION, MISTAKE, SUCCESS, WRONG_KEY } from "~/components/utils";
-import { Game as GameI, Status } from "~/models/game";
+import { Game as GameI, Status as StatusI } from "~/models/game";
 import { useBlink } from "./useBlink";
 
 const gameObjectInitial: GameI = {
@@ -8,10 +8,15 @@ const gameObjectInitial: GameI = {
     score: 0,
 }
 
+const statusObjectInitial: StatusI = {
+    stateType: '',
+    message: ''
+}
+
 const useGame = () => {
     const [gameObj, setGameObj] = useState<GameI>(gameObjectInitial);
-    const { side, show } = useBlink(BLINK_DELAY, BLINK_DURATION);
-    const [status, setStatus] = useState<Status | null>(null);
+    const [status, setStatus] = useState<StatusI>(statusObjectInitial);
+    const { side, show, resetTime, startBlink, stopBlink } = useBlink(BLINK_DELAY, BLINK_DURATION);
 
     function setScore(score: number) {
         setGameObj((prev: GameI) => ({
@@ -52,7 +57,7 @@ const useGame = () => {
         }
     }
     function start() {
-
+        startBlink();
     }
     function stop() {
         /**
@@ -60,6 +65,9 @@ const useGame = () => {
          * reset game obj
          * reset useBlink
          */
+        setStatus(statusObjectInitial);
+        setGameObj(gameObjectInitial);
+        stopBlink();
     }
 
     return {
