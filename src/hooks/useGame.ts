@@ -15,15 +15,10 @@ const useGame = () => {
     const [gameStarted, setGameStarted] = useState<boolean>(false);
     const [score, setScore] = useState<number>(0);
     const {
-        intervalTS,
-        setIntervalTimeStart,
-        setIntervalTimeEnd,
-        resetIntervalTSObject,
         triggerInterval,
         startInterval,
         stopInterval,
         willShow,
-        compareTimeFromEvent,
         position,
         randomAndSetPosition,
         resetPosition
