@@ -1,10 +1,8 @@
-import { Dialog } from '@headlessui/react';
 import { useEffect, useRef, useState } from 'react';
 import { Player } from '~/models/game';
-import EmailForm from '../EmailForm';
 import Game from '../game/Game';
-import Loading from '../shared/Loading';
 import { randomBetweenZeroAnd } from '../utils';
+import NameForm from '../NameForm';
 
 function Index() {
   //todo: change value to null
@@ -27,7 +25,7 @@ function Index() {
   }, [player]);
   return (
     <div className="">
-      {player ? <Game {...{ gameToRun: showGame, player: player as Player }} /> : <EmailForm />}
+      {player ? <Game {...{ gameToRun: showGame, player: player as Player }} /> : <NameForm />}
     </div>
   );
 }

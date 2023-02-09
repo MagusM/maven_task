@@ -1,17 +1,16 @@
 import { useRef, useState } from "react";
 
-const EmailForm = () => {
+const NameForm = () => {
     const [showErrorDiv, setShowErrorDiv] = useState(false);
-    const [email, setEmail] = useState('');
-    const emailInputRef = useRef<any>(null);
+    const [name, setName] = useState('');
+    const nameInputRef = useRef<any>(null);
 
     const handleSubmit = () => {
         setShowErrorDiv(false);
         const expression: RegExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-        const value = emailInputRef.current.value as string;
-        const result: boolean = expression.test(value);
-        if (result) {
-            setEmail(value);
+        const value = nameInputRef.current.value as string;
+        if (value !== '') {
+            setName(value);
             return;
         }
         setShowErrorDiv(true);
@@ -41,15 +40,15 @@ const EmailForm = () => {
         <div className="h-screen w-screen flex flex-col items-center justify-center text-white space-y-20">
             <div className="card inline-block flex-shrink-0 w-96 max-w-sm shadow-2xl bg-base-10">
                 <div className="card-body">
-                    <span className="">Please submit your email to start Game!</span>
+                    <span className="">Please submit your name to start Game!</span>
                     <div className="form-control">
                         <label className="label">
-                            <span className="label-text">Email</span>
+                            <span className="label-text">Name</span>
                         </label>
                         <input 
-                            ref={emailInputRef}
+                            ref={nameInputRef}
                             type="text" 
-                            placeholder="email" 
+                            placeholder="Player..." 
                             className="input input-bordered text-black" 
                         />
                     </div>
@@ -68,4 +67,4 @@ const EmailForm = () => {
     );
 }
 
-export {EmailForm as default};
+export {NameForm as default};
