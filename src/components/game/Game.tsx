@@ -34,7 +34,6 @@ const Game = ({ gameToRun, player }: GameProps) => {
         randomAndSetPosition,
         resetPosition,
         willShow,
-        compareTimeFromEvent
     } = useGame();
 
     useEffect(() => {
