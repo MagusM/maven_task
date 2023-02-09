@@ -47,7 +47,6 @@ const useGame = () => {
 
     function resetGame() {
         resetPosition();
-        resetIntervalTSObject();
         resetScore();
     }
 
