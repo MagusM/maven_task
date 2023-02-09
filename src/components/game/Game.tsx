@@ -1,61 +1,124 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useBlink } from "~/hooks/useBlink";
-import { useGame } from "~/hooks/useGame";
+import useGame from "~/hooks/useGame";
+import usePosition from "~/hooks/usePosition";
 import { Game as GameI, Player } from '~/models/game';
-import { BLINK_DELAY, BLINK_DURATION } from "../utils";
+import { LEFT, MISTAKE, RIGHT, SUCCESS, WRONG_KEY } from "../utils";
 import Indicator from "./Indicator";
-import Status from "./Status";
+import StatusElement from "./StatusElement";
 
 type GameProps = {
-    gameStatus: boolean
+    gameToRun: boolean
     player: Player
 };
 
-const Game = ({ gameStatus, player}: GameProps) => {
-    let gameObject: GameI = {
-        player: player.email,
-        score: 0,
-    }
+const Game = ({ gameToRun, player}: GameProps) => {
+    const [keyPressed, setKeyPressed] = useState<string|null>(null);
+
+    // let gameObject: GameI = {
+    //     player: player.email,
+    //     score: 0,
+    // }
     const {
-        setScore,
-        handleKeyPressed,
-        start,
-        stop,
-        side,
+        gameStarted,
+        startGame,
+        stopGame,
+        resetGame,
+        score,
+        incrementScore,
+        resetScore,
         status,
-        show,
-        score
+        updateStatus,
+        resetStatus,
+        position,
+        randomAndSetPosition,
+        resetPosition
     } = useGame();
 
     useEffect(() => {
-        if (gameStatus) {
+        if (gameToRun) {
+            startGame();
+        } else {
+            stopGame();
+        }
+    }, [gameToRun]);
+
+    //todo: take in calc the side the indicator is in
+    useEffect(() => {
+        
+        if (keyPressed === '') {
+        }
+        if (keyPressed === 'a') {
+            console.log('a clicked')!
+            incrementScore();
+            updateStatus({
+                stateType: SUCCESS,
+                message: SUCCESS
+            });
+        }
+        else if (keyPressed === 'l') {
+            console.log('l clicked');
+            incrementScore();
+            updateStatus({
+                stateType: SUCCESS,
+                message: SUCCESS
+            });
+        } else {
+            console.log(`${keyPressed} clciked, wrong key`);
+            setKeyPressed('');
+            updateStatus({
+                stateType: MISTAKE,
+                message: WRONG_KEY
+            });
+        }
+    }, [gameToRun])
+
+    // function handleKeyPressed(e: KeyboardEvent) {
+    //     if (e.key.toLowerCase() === 'a') {
+    //         setKeyPressed('a');
+    //     }
+    //     else if (e.key.toLowerCase() === 'l') {
+    //         setKeyPressed('l');
+    //     }
+    // }
+
+    const handleKeyPressed = useCallback(
+        (e: KeyboardEvent) => {
+            if (e.key.toLowerCase() === 'a') {
+                setKeyPressed('a');
+            }
+            else if (e.key.toLowerCase() === 'l') {
+                setKeyPressed('l');
+            }
+        },
+      [],
+    );
+    
+    //this should define the status component
+    useEffect(() => {
+        if (gameToRun) {
             document.addEventListener('keydown', handleKeyPressed);
+        } else {
+            document.removeEventListener('keydown', handleKeyPressed);
         }
         
         return () => {
             document.removeEventListener('keydown', handleKeyPressed);
         };
-    }, [handleKeyPressed, gameStatus])
+    }, [gameToRun]);
 
-    useEffect(() => {
-        if (gameStatus) {
-            start();
-        } else {
-            stop();
-        }
-
-    }, [gameStatus]);
+    console.log(`side is ${position}`);
 
     return (
         <div className="flex flex-col w-[99vh] h-[99vh] justify-center">
             <div id="upperContainer" className="flex flex-row h-2/3">
                 <div className="flex w-full p-4">
-                    <div id='left' className="h-full flex-grow card bg-base-300 rounded-box justify-center items-center place-items-center">
-                        {(side === 'left' && show) ? <Indicator /> : null}
+                    <div id={LEFT} className="h-full flex-grow card bg-base-300 rounded-box justify-center items-center place-items-center">
+                        {(position === LEFT && gameStarted) ? <Indicator /> : null}
                     </div>
                     <div className="divider divider-horizontal bg-white bg-transparent"></div>
-                    <div id='right' className="h-full flex-grow card bg-base-300 rounded-box place-items-center justify-center items-center">
-                        {(side === 'right' && show) ? <Indicator /> : null}
+                    <div id={RIGHT} className="h-full flex-grow card bg-base-300 rounded-box place-items-center justify-center items-center">
+                        {(position === RIGHT && gameStarted) ? <Indicator /> : null}
                     </div>
                 </div>
 
@@ -63,7 +126,7 @@ const Game = ({ gameStatus, player}: GameProps) => {
             <div className="divider"></div>
             <div id="lowerContainer" className="text-black h-1/3 flex flex-col justify-center items-center">
                 <div className="w-80">
-                    {status.message === '' ? null : <Status status={status} />}    
+                    {(!gameStarted && status.stateType === '') && <StatusElement {...status} />}
                 </div>
                 <div>
                     score: {score}

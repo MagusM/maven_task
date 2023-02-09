@@ -1,88 +1,77 @@
-import { useCallback, useState } from "react"
-import { BLINK_DELAY, BLINK_DURATION, MISTAKE, SUCCESS, WRONG_KEY } from "~/components/utils";
-import { Game as GameI, Status as StatusI } from "~/models/game";
+import { useState } from "react";
 import { useBlink } from "./useBlink";
-
-const gameObjectInitial: GameI = {
-    player: '',
-    score: 0,
-}
-
-const statusObjectInitial: StatusI = {
-    stateType: '',
-    message: ''
-}
+import useGameInterval from "./useGameInterval";
+import usePosition from "./usePosition";
+import useStatus from "./useStatus";
 
 const useGame = () => {
-    const [gameObj, setGameObj] = useState<GameI>(gameObjectInitial);
-    const [status, setStatus] = useState<StatusI>(statusObjectInitial);
-    const [startGame, setStartGame] = useState<boolean>(false);
-    const { side, show, showIntervalTS,startBlink, stopBlink, resetBlink } = useBlink(BLINK_DELAY, BLINK_DURATION, startGame);
+    /**
+     * game should handle
+     * interval
+     * game start/stop/reset
+     * 
+     */
 
-    function setScore(score: number) {
-        setGameObj((prev: GameI) => ({
-            ...prev,
-            score
-        }));
-    }
-
-    const incrementScore = useCallback(() => setGameObj((prev: GameI) => ({
-        ...prev,
-        score: prev.score + 1
-        })), []);
+    const [gameStarted, setGameStarted] = useState<boolean>(false);
+    const [score, setScore] = useState<number>(0);
+    const {position, randomAndSetPosition, resetPosition} = usePosition();
+    const {
+        intervalTS,
+        setIntervalTimeStart,
+        setIntervalTimeEnd,
+        resetIntervalTSObject,
+        triggerInterval,
+        startInterval,
+        stopInterval,
+        willShow
+    } = useGameInterval();
+    const {blink, startBlink, stopBlink} = useBlink();
+    const {status, updateStatus, resetStatus} = useStatus();
     
-    function handleKeyPressed(e: KeyboardEvent) {
-        if (!show) {
-            //todo: handle too soon or too late
-            return;
-        }
-        if (e.key.toLowerCase() === 'a' && side === 'left') {
-                incrementScore();
-                setStatus({
-                    stateType: SUCCESS,
-                    message: SUCCESS
-                });
-        }
-        else if (e.key.toLowerCase() === 'l' && side === 'right') {
-            incrementScore();
-            setStatus({
-                stateType: SUCCESS,
-                message: SUCCESS
-            });
-        } else {
-            setStatus({
-                stateType: MISTAKE,
-                message: WRONG_KEY
-            });
-            stop();
-        }
+    console.log(`useGame postion is ${position}`);
+
+    function startGame() {
+        setGameStarted(true);
+        startInterval();
+        randomAndSetPosition();
+        startBlink(); //needed ?
     }
-    function start() {
-        setStartGame(true);
+    
+    function stopGame() {
+        setGameStarted(false);
+        stopInterval();
+        stopBlink(); //needed ?
     }
-    function stop() {
-        setStartGame(false);
+
+    function resetGame() {
+        resetPosition();
+        resetIntervalTSObject();
     }
-    function reset() {
-        setGameObj(gameObjectInitial);
-        resetBlink();
+
+    function incrementScore() {
+        setScore((prev) => (prev+1));
     }
-    function resetStatus() {
-        setStatus(statusObjectInitial);
+
+    function resetScore() {
+        setScore(0);
     }
 
     return {
-        setScore,
-        handleKeyPressed,
-        start,
-        stop,
-        reset,
+        gameStarted: gameStarted,
+        startGame,
+        stopGame,
+        resetGame,
+        score: score,
+        incrementScore,
+        resetScore,
+        status: status, 
+        updateStatus, 
         resetStatus,
-        show: show,
-        side: side,
-        status: status,
-        score: gameObj.score
+        position: position, 
+        randomAndSetPosition, 
+        resetPosition,
+        willShow: willShow
     }
 }
 
-export {useGame}
+export default useGame;

@@ -27,7 +27,7 @@ function Index() {
   }, [player]);
   return (
     <div className="">
-      {player ? <Game {...{ gameStatus: showGame, player: player as Player }} /> : <EmailForm />}
+      {player ? <Game {...{ gameToRun: showGame, player: player as Player }} /> : <EmailForm />}
     </div>
   );
 }

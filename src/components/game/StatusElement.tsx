@@ -1,8 +1,14 @@
 import { Status as StatusI } from "~/models/game";
 import { MISTAKE } from "../utils";
 
-const Status = (status: StatusI) => {
+const StatusElement = (status: StatusI) => {
+    console.log('StatusElement');
     console.log({status});
+
+    if (status.stateType === '') {
+        console.log('empty');
+        return null;
+    }
     if (status.stateType === MISTAKE) {
         return (
             <div className="alert alert-error shadow-lg">
@@ -19,4 +25,4 @@ const Status = (status: StatusI) => {
     
 }
 
-export default Status;
+export default StatusElement;
