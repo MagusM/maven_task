@@ -21,7 +21,8 @@ const useGame = () => {
         willShow,
         position,
         randomAndSetPosition,
-        resetPosition
+        resetPosition,
+        setWillShow
     } = useGameInterval();
     const {status, updateStatus, resetStatus} = useStatus();
     
@@ -68,6 +69,8 @@ const useGame = () => {
         randomAndSetPosition, 
         resetPosition,
         willShow: willShow,
+        setWillShow,
+        triggerInterval
     }
 }
 

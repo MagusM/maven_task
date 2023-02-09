@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { useBlink } from "~/hooks/useBlink";
 import useGame from "~/hooks/useGame";
-import usePosition from "~/hooks/usePosition";
 import { Game as GameI, Player } from '~/models/game';
-import { LEFT, MISTAKE, RIGHT, SUCCESS, TOO_SOON, WRONG_KEY } from "../utils";
+import { LEFT, MISTAKE, RIGHT, SUCCESS, TOO_LATE, TOO_SOON, WRONG_KEY } from "../utils";
 import Indicator from "./Indicator";
 import StatusElement from "./StatusElement";
 
@@ -19,6 +17,7 @@ const Game = ({ gameToRun, player }: GameProps) => {
     //     player: player.email,
     //     score: 0,
     // }
+
     const {
         gameStarted,
         startGame,
@@ -26,14 +25,13 @@ const Game = ({ gameToRun, player }: GameProps) => {
         resetGame,
         score,
         incrementScore,
-        resetScore,
         status,
         updateStatus,
         resetStatus,
         position,
-        randomAndSetPosition,
-        resetPosition,
         willShow,
+        setWillShow,
+        triggerInterval
     } = useGame();
 
     useEffect(() => {
@@ -46,6 +44,8 @@ const Game = ({ gameToRun, player }: GameProps) => {
 
     const handleKeyPressed = useCallback(
         (e: KeyboardEvent) => {
+            const keyP = e.key.toLowerCase();
+            setKeyPressed(keyP);
             //todo: handle too late scenario
             //too soon
             if (!willShow) {
@@ -58,20 +58,19 @@ const Game = ({ gameToRun, player }: GameProps) => {
                 //todo: update server with score
                 return;
             }
-            const keyP = e.key.toLowerCase()
-            console.log(keyP);
             if ((keyP === 'a' && position === LEFT) || (keyP === 'l' && position === RIGHT)) {
-                setKeyPressed(keyP);
                 incrementScore();
                 updateStatus({
                     stateType: SUCCESS,
                     message: SUCCESS,
                 });
+                setWillShow(false);
             } else {
                 updateStatus({
                     stateType: MISTAKE,
                     message: WRONG_KEY,
                 });
+                setWillShow(false);
                 resetGame();
                 //todo: update server with score
             }
@@ -90,7 +89,23 @@ const Game = ({ gameToRun, player }: GameProps) => {
         return () => {
             document.removeEventListener('keydown', handleKeyPressed);
         };
-    }, [gameStarted]);
+    }, [willShow]);
+
+    useEffect(() => {
+        if (triggerInterval && !willShow && keyPressed === null) {
+            updateStatus({
+                stateType: MISTAKE,
+                message: TOO_LATE,
+            });
+            resetGame();
+        }
+    }, [willShow]);
+
+    useEffect(() => {
+        if (!willShow) {
+            setKeyPressed(null);
+        }
+    }, [willShow]);
 
     return (
         <div className="flex flex-col w-[99vh] h-[99vh] justify-center">
@@ -109,7 +124,7 @@ const Game = ({ gameToRun, player }: GameProps) => {
             <div className="divider"></div>
             <div id="lowerContainer" className="text-black h-1/3 flex flex-col justify-center items-center">
                 <div className="w-80">
-                    {(!gameStarted && status.stateType === '') && <StatusElement {...status} />}
+                    {!willShow && <StatusElement {...status} /> }
                 </div>
                 <div>
                     score: {score}

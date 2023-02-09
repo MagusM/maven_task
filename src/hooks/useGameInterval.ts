@@ -50,7 +50,8 @@ const useGameInterval = (delay: number = BLINK_DELAY, duration: number = BLINK_D
         willShow,
         position,
         randomAndSetPosition, 
-        resetPosition
+        resetPosition,
+        setWillShow
     };
 };
 
