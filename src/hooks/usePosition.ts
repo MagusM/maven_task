@@ -9,10 +9,6 @@ const map = {
 const usePosition = () => {
     const [position, setPosition] = useState<string>();
 
-    useEffect(() => {
-        console.log(`usePosition, position is now: ${position}`);
-    }, [position]);
-
     const randomAndSetPosition = () => {
         const randomRes = randomBetweenZeroAnd(1);
         setPosition(map[randomRes]);

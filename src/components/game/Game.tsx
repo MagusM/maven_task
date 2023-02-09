@@ -46,10 +46,7 @@ const Game = ({ gameToRun, player }: GameProps) => {
         (e: KeyboardEvent) => {
             const keyP = e.key.toLowerCase();
             setKeyPressed(keyP);
-            //todo: handle too late scenario
-            //too soon
             if (!willShow) {
-                console.log('too soon');
                 updateStatus({
                     stateType: MISTAKE,
                     message: TOO_SOON,
@@ -78,7 +75,6 @@ const Game = ({ gameToRun, player }: GameProps) => {
         [willShow]
     );
 
-    //this should define the status component
     useEffect(() => {
         if (gameStarted) {
             document.addEventListener('keydown', handleKeyPressed);

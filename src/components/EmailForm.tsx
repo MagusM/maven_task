@@ -9,15 +9,9 @@ const EmailForm = () => {
         setShowErrorDiv(false);
         const expression: RegExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
         const value = emailInputRef.current.value as string;
-        console.log({value});
         const result: boolean = expression.test(value);
         if (result) {
             setEmail(value);
-            /**
-             * todo: continue
-             * what to do: 
-             * 2. start game with hook
-             */
             return;
         }
         setShowErrorDiv(true);

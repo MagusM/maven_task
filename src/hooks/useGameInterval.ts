@@ -11,14 +11,12 @@ const useGameInterval = (delay: number = BLINK_DELAY, duration: number = BLINK_D
     const [triggerInterval, setTriggerInterval] = useState<boolean>(false);
     const [willShow, setWillShow] = useState<boolean>(false);
 
-    //after each interval randon a new positon
     const { position, randomAndSetPosition, resetPosition } = usePosition();
 
     useEffect(() => {
         if (!triggerInterval) {
             return;
         }
-        console.log('interval triggered');
         const intervalID = setInterval(() => {
             randomAndSetPosition();
             setWillShow(true);
