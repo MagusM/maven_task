@@ -23,9 +23,9 @@ const useGame = () => {
         triggerInterval,
         startInterval,
         stopInterval,
-        willShow
+        willShow,
+        compareTimeFromEvent
     } = useGameInterval();
-    const {blink, startBlink, stopBlink} = useBlink();
     const {status, updateStatus, resetStatus} = useStatus();
     
     console.log(`useGame postion is ${position}`);
@@ -34,18 +34,17 @@ const useGame = () => {
         setGameStarted(true);
         startInterval();
         randomAndSetPosition();
-        startBlink(); //needed ?
     }
     
     function stopGame() {
         setGameStarted(false);
         stopInterval();
-        stopBlink(); //needed ?
     }
 
     function resetGame() {
         resetPosition();
         resetIntervalTSObject();
+        resetScore();
     }
 
     function incrementScore() {
@@ -70,7 +69,8 @@ const useGame = () => {
         position: position, 
         randomAndSetPosition, 
         resetPosition,
-        willShow: willShow
+        willShow: willShow,
+        compareTimeFromEvent
     }
 }
 

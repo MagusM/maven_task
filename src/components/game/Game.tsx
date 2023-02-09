@@ -3,7 +3,7 @@ import { useBlink } from "~/hooks/useBlink";
 import useGame from "~/hooks/useGame";
 import usePosition from "~/hooks/usePosition";
 import { Game as GameI, Player } from '~/models/game';
-import { LEFT, MISTAKE, RIGHT, SUCCESS, WRONG_KEY } from "../utils";
+import { LEFT, MISTAKE, RIGHT, SUCCESS, TOO_SOON, WRONG_KEY } from "../utils";
 import Indicator from "./Indicator";
 import StatusElement from "./StatusElement";
 
@@ -12,8 +12,8 @@ type GameProps = {
     player: Player
 };
 
-const Game = ({ gameToRun, player}: GameProps) => {
-    const [keyPressed, setKeyPressed] = useState<string|null>(null);
+const Game = ({ gameToRun, player }: GameProps) => {
+    const [keyPressed, setKeyPressed] = useState<string | null>(null);
 
     // let gameObject: GameI = {
     //     player: player.email,
@@ -32,7 +32,9 @@ const Game = ({ gameToRun, player}: GameProps) => {
         resetStatus,
         position,
         randomAndSetPosition,
-        resetPosition
+        resetPosition,
+        willShow,
+        compareTimeFromEvent
     } = useGame();
 
     useEffect(() => {
@@ -43,71 +45,51 @@ const Game = ({ gameToRun, player}: GameProps) => {
         }
     }, [gameToRun]);
 
-    //todo: take in calc the side the indicator is in
-    useEffect(() => {
-        
-        if (keyPressed === '') {
-        }
-        if (keyPressed === 'a') {
-            console.log('a clicked')!
-            incrementScore();
-            updateStatus({
-                stateType: SUCCESS,
-                message: SUCCESS
-            });
-        }
-        else if (keyPressed === 'l') {
-            console.log('l clicked');
-            incrementScore();
-            updateStatus({
-                stateType: SUCCESS,
-                message: SUCCESS
-            });
-        } else {
-            console.log(`${keyPressed} clciked, wrong key`);
-            setKeyPressed('');
-            updateStatus({
-                stateType: MISTAKE,
-                message: WRONG_KEY
-            });
-        }
-    }, [gameToRun])
-
-    // function handleKeyPressed(e: KeyboardEvent) {
-    //     if (e.key.toLowerCase() === 'a') {
-    //         setKeyPressed('a');
-    //     }
-    //     else if (e.key.toLowerCase() === 'l') {
-    //         setKeyPressed('l');
-    //     }
-    // }
-
     const handleKeyPressed = useCallback(
         (e: KeyboardEvent) => {
-            if (e.key.toLowerCase() === 'a') {
-                setKeyPressed('a');
+            //todo: handle too late scenario
+            //too soon
+            if (!willShow) {
+                updateStatus({
+                    stateType: MISTAKE,
+                    message: TOO_SOON,
+                });
+                resetGame();
+                //todo: update server with score
+                return;
             }
-            else if (e.key.toLowerCase() === 'l') {
-                setKeyPressed('l');
+            const keyP = e.key.toLowerCase()
+            if ((keyP === 'a' && position === LEFT) || (keyP === 'l' && position === RIGHT)) {
+                setKeyPressed(keyP);
+                incrementScore();
+                updateStatus({
+                    stateType: SUCCESS,
+                    message: SUCCESS,
+                });
+            } else {
+                updateStatus({
+                    stateType: MISTAKE,
+                    message: WRONG_KEY,
+                });
+                resetGame();
+                //todo: update server with score
             }
         },
-      [],
+        [willShow]
     );
-    
+
     //this should define the status component
     useEffect(() => {
-        if (gameToRun) {
+        if (gameStarted) {
             document.addEventListener('keydown', handleKeyPressed);
         } else {
             document.removeEventListener('keydown', handleKeyPressed);
         }
-        
+
         return () => {
             document.removeEventListener('keydown', handleKeyPressed);
         };
-    }, [gameToRun]);
-
-    console.log(`side is ${position}`);
+    }, [gameStarted]);
 
     return (
         <div className="flex flex-col w-[99vh] h-[99vh] justify-center">
@@ -136,4 +118,4 @@ const Game = ({ gameToRun, player}: GameProps) => {
     );
 }
 
-export {Game as default};
+export { Game as default };

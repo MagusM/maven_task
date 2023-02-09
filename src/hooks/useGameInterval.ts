@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
-import { BLINK_DELAY, BLINK_DURATION } from "~/components/utils";
-import usePosition from "./usePosition";
+import { useEffect, useState } from 'react';
+import { BLINK_DELAY, BLINK_DURATION } from '~/components/utils';
+import usePosition from './usePosition';
 
 type ShowIntervalTS = {
-    startTime: number,
-    endTime: number
+    startTime: number;
+    endTime: number;
 };
 
 const initialShowIntervalTSObject: ShowIntervalTS = {
     startTime: 0,
-    endTime: 0
-}
+    endTime: 0,
+};
 
 const useGameInterval = (delay: number = BLINK_DELAY, duration: number = BLINK_DURATION) => {
     const [intervalTS, setIntervalTS] = useState<ShowIntervalTS>(initialShowIntervalTSObject);
@@ -18,16 +18,22 @@ const useGameInterval = (delay: number = BLINK_DELAY, duration: number = BLINK_D
     const [willShow, setWillShow] = useState<boolean>(false);
 
     //after each interval randon a new positon
-    const {randomAndSetPosition} = usePosition();
+    const { randomAndSetPosition } = usePosition();
+
+    useEffect(() => {
+        if (willShow) {
+            setIntervalTimeStart(Date.now());
+        } else {
+            setIntervalTimeEnd(Date.now());
+        }
+    }, [willShow]);
 
     useEffect(() => {
         const intervalID = setInterval(() => {
-            setIntervalTimeStart(Date.now());
             randomAndSetPosition();
             setWillShow(true);
 
             setTimeout(() => {
-                setIntervalTimeEnd(Date.now());
                 setWillShow(false);
             }, duration);
         }, delay);
@@ -37,15 +43,14 @@ const useGameInterval = (delay: number = BLINK_DELAY, duration: number = BLINK_D
             resetIntervalTSObject();
             setWillShow(false);
         };
-
-    }, [triggerInterval]);
+    }, []);
 
     function setIntervalTimeStart(startTime: number) {
-        setIntervalTS((prev: ShowIntervalTS) => ({ ...prev, startTime }))
+        setIntervalTS((prev: ShowIntervalTS) => ({ ...prev, startTime }));
     }
 
     function setIntervalTimeEnd(endTime: number) {
-        setIntervalTS((prev: ShowIntervalTS) => ({ ...prev, endTime }))
+        setIntervalTS((prev: ShowIntervalTS) => ({ ...prev, endTime }));
     }
 
     function resetIntervalTSObject() {
@@ -60,6 +65,15 @@ const useGameInterval = (delay: number = BLINK_DELAY, duration: number = BLINK_D
         setTriggerInterval(false);
     }
 
+    function compareTimeFromEvent(eventTime: number) {
+        if (eventTime < intervalTS.startTime) {
+            return -1;
+        }
+        if (eventTime > intervalTS.endTime) {
+            return 1;
+        }
+    }
+
     return {
         intervalTS,
         setIntervalTimeStart,
@@ -68,8 +82,9 @@ const useGameInterval = (delay: number = BLINK_DELAY, duration: number = BLINK_D
         triggerInterval,
         startInterval,
         stopInterval,
-        willShow
-    }
-}
+        willShow,
+        compareTimeFromEvent
+    };
+};
 
 export default useGameInterval;
