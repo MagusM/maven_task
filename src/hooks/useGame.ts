@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useBlink } from "./useBlink";
 import useGameInterval from "./useGameInterval";
 import usePosition from "./usePosition";
@@ -14,7 +14,6 @@ const useGame = () => {
 
     const [gameStarted, setGameStarted] = useState<boolean>(false);
     const [score, setScore] = useState<number>(0);
-    const {position, randomAndSetPosition, resetPosition} = usePosition();
     const {
         intervalTS,
         setIntervalTimeStart,
@@ -24,16 +23,21 @@ const useGame = () => {
         startInterval,
         stopInterval,
         willShow,
-        compareTimeFromEvent
+        compareTimeFromEvent,
+        position,
+        randomAndSetPosition,
+        resetPosition
     } = useGameInterval();
     const {status, updateStatus, resetStatus} = useStatus();
     
-    console.log(`useGame postion is ${position}`);
+    
+    useEffect(() => {
+        console.log(`useGame postion is ${position}`);
+    }, [position]);
 
     function startGame() {
         setGameStarted(true);
         startInterval();
-        randomAndSetPosition();
     }
     
     function stopGame() {

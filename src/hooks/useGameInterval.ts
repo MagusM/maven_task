@@ -18,22 +18,28 @@ const useGameInterval = (delay: number = BLINK_DELAY, duration: number = BLINK_D
     const [willShow, setWillShow] = useState<boolean>(false);
 
     //after each interval randon a new positon
-    const { randomAndSetPosition } = usePosition();
+    const { position, randomAndSetPosition, resetPosition } = usePosition();
 
     useEffect(() => {
         if (willShow) {
             setIntervalTimeStart(Date.now());
         } else {
+            resetPosition();
             setIntervalTimeEnd(Date.now());
         }
     }, [willShow]);
 
     useEffect(() => {
+        if (!triggerInterval) {
+            return;
+        }
+        console.log('interval triggered');
         const intervalID = setInterval(() => {
             randomAndSetPosition();
             setWillShow(true);
 
             setTimeout(() => {
+                resetPosition();
                 setWillShow(false);
             }, duration);
         }, delay);
@@ -43,7 +49,7 @@ const useGameInterval = (delay: number = BLINK_DELAY, duration: number = BLINK_D
             resetIntervalTSObject();
             setWillShow(false);
         };
-    }, []);
+    }, [triggerInterval]);
 
     function setIntervalTimeStart(startTime: number) {
         setIntervalTS((prev: ShowIntervalTS) => ({ ...prev, startTime }));
@@ -83,7 +89,10 @@ const useGameInterval = (delay: number = BLINK_DELAY, duration: number = BLINK_D
         startInterval,
         stopInterval,
         willShow,
-        compareTimeFromEvent
+        compareTimeFromEvent,
+        position,
+        randomAndSetPosition, 
+        resetPosition
     };
 };
 

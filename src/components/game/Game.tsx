@@ -50,6 +50,7 @@ const Game = ({ gameToRun, player }: GameProps) => {
             //todo: handle too late scenario
             //too soon
             if (!willShow) {
+                console.log('too soon');
                 updateStatus({
                     stateType: MISTAKE,
                     message: TOO_SOON,
@@ -59,6 +60,7 @@ const Game = ({ gameToRun, player }: GameProps) => {
                 return;
             }
             const keyP = e.key.toLowerCase()
+            console.log(keyP);
             if ((keyP === 'a' && position === LEFT) || (keyP === 'l' && position === RIGHT)) {
                 setKeyPressed(keyP);
                 incrementScore();
@@ -96,11 +98,11 @@ const Game = ({ gameToRun, player }: GameProps) => {
             <div id="upperContainer" className="flex flex-row h-2/3">
                 <div className="flex w-full p-4">
                     <div id={LEFT} className="h-full flex-grow card bg-base-300 rounded-box justify-center items-center place-items-center">
-                        {(position === LEFT && gameStarted) ? <Indicator /> : null}
+                        {(willShow && position === LEFT) ? <Indicator /> : null}
                     </div>
                     <div className="divider divider-horizontal bg-white bg-transparent"></div>
                     <div id={RIGHT} className="h-full flex-grow card bg-base-300 rounded-box place-items-center justify-center items-center">
-                        {(position === RIGHT && gameStarted) ? <Indicator /> : null}
+                        {(willShow && position === RIGHT) ? <Indicator /> : null}
                     </div>
                 </div>
 

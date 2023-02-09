@@ -1,20 +1,31 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LEFT, randomBetweenZeroAnd, RIGHT } from "~/components/utils";
 
+const map = {
+    0: LEFT,
+    1: RIGHT
+}
+
 const usePosition = () => {
-    const [position, setPosition] = useState<string | null>(null);
+    const [position, setPosition] = useState<string>();
 
-    function randomAndSetPosition() {
+    useEffect(() => {
+        console.log(`usePosition, position is now: ${position}`);
+    }, [position]);
+
+    const randomAndSetPosition = () => {
         const randomRes = randomBetweenZeroAnd(1);
-        setPosition(randomRes === 1 ? RIGHT : LEFT);
+        setPosition(map[randomRes]);
     }
 
-    function resetPosition() {
-        setPosition(null);
+    const resetPosition = () => {
+        setPosition(undefined);
     }
+
+    const pos = useMemo(() => position, [position]);
 
     return {
-        position,
+        position: pos,
         randomAndSetPosition,
         resetPosition
     }
