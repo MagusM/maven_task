@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
+import { upsertUser } from "~/api";
 import useGame from "~/hooks/useGame";
-import { Game as GameI, Player } from '~/models/game';
+import { Player } from '~/models/game';
 import { LEFT, MISTAKE, RIGHT, SUCCESS, TOO_LATE, TOO_SOON, WRONG_KEY } from "../utils";
 import Indicator from "./Indicator";
 import StatusElement from "./StatusElement";
@@ -12,11 +13,6 @@ type GameProps = {
 
 const Game = ({ gameToRun, player }: GameProps) => {
     const [keyPressed, setKeyPressed] = useState<string | null>(null);
-
-    // let gameObject: GameI = {
-    //     player: player.email,
-    //     score: 0,
-    // }
 
     const {
         gameStarted,
@@ -39,8 +35,13 @@ const Game = ({ gameToRun, player }: GameProps) => {
             startGame();
         } else {
             stopGame();
+            (async () => {
+                const newPlayer = { ...player, score: score };
+                const res = await upsertUser(newPlayer);
+                console.log(res);
+            })();
         }
-    }, [gameToRun]);
+    }, [gameToRun, player]);
 
     const handleKeyPressed = useCallback(
         (e: KeyboardEvent) => {
@@ -52,7 +53,11 @@ const Game = ({ gameToRun, player }: GameProps) => {
                     message: TOO_SOON,
                 });
                 resetGame();
-                //todo: update server with score
+                (async () => {
+                    const newPlayer = {...player, score: score};
+                    const res = await upsertUser(newPlayer);
+                    console.log(res);
+                })();
                 return;
             }
             if ((keyP === 'a' && position === LEFT) || (keyP === 'l' && position === RIGHT)) {
@@ -69,7 +74,11 @@ const Game = ({ gameToRun, player }: GameProps) => {
                 });
                 setWillShow(false);
                 resetGame();
-                //todo: update server with score
+                (async () => {
+                    const newPlayer = { ...player, score: score };
+                    const res = await upsertUser(newPlayer);
+                    console.log(res);
+                })();
             }
         },
         [willShow]
@@ -94,6 +103,11 @@ const Game = ({ gameToRun, player }: GameProps) => {
                 message: TOO_LATE,
             });
             resetGame();
+            (async () => {
+                const newPlayer = { ...player, score: score };
+                const res = await upsertUser(newPlayer);
+                console.log(res);
+            })();
         }
     }, [willShow]);
 

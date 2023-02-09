@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-const NameForm = () => {
+const NameForm = ({onSubmit}) => {
     const [showErrorDiv, setShowErrorDiv] = useState(false);
     const [name, setName] = useState('');
     const nameInputRef = useRef<any>(null);
@@ -11,9 +11,10 @@ const NameForm = () => {
         const value = nameInputRef.current.value as string;
         if (value !== '') {
             setName(value);
-            return;
+            onSubmit(value);
+        } else {
+            setShowErrorDiv(true);
         }
-        setShowErrorDiv(true);
     }
 
     const handleAlertCloseClicked = () => {

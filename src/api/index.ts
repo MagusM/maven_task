@@ -1,14 +1,17 @@
 import { Player } from "~/models/game";
 
-const POST = 'post';
-const GET  = 'get';
+const POST = 'POST';
+const GET  = 'GET';
 
 const fetcher = async (endpoint:string, method=GET, body?:any) => {
     const url = `${import.meta.env.VITE_SERVER_HOST}/${endpoint}`;
     return fetch(url, {
-        body: method === POST ? JSON.stringify(body) : null,
+        body: JSON.stringify(body),
+        headers: {
+            'Content-Type': 'application/json'
+        },
         method: method
-    }).then(res => res.json()).catch(e => console.log({e}));
+    }).then(res => res.json()).catch(e => console.log('error fetching'));
 }
 
 const getLeaderBoard = async () => {
@@ -17,20 +20,14 @@ const getLeaderBoard = async () => {
     return data;
 }
 
-const addNewPlayer = async (user: Player) => {
-    const data = await fetcher('users', POST, {user});
-
-    return data;
-}
-
-const updatePlayer = async (user: Player) => {
-    const data = await fetcher('updateUser', POST, { user });
+const upsertUser = async (user: Player) => {
+    console.log(user);
+    const data = await fetcher('upsertUser', POST, {user});
 
     return data;
 }
 
 export {
     getLeaderBoard,
-    addNewPlayer,
-    updatePlayer
+    upsertUser
 }
