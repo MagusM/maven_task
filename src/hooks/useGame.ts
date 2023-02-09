@@ -68,7 +68,6 @@ const useGame = () => {
         randomAndSetPosition, 
         resetPosition,
         willShow: willShow,
-        compareTimeFromEvent
     }
 }
 
